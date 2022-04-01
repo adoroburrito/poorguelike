@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 raylib = "*"
 rand = "*"
+uuid = { version = "*", features = ["v4"] }
