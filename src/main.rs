@@ -311,6 +311,18 @@ fn get_starting_buildings(settings: &Settings) -> Vec<Entity> {
     return buildings;
 }
 
+fn user_interacted(d: &RaylibDrawHandle) -> bool {
+    if d.is_key_pressed(KeyboardKey::KEY_H)
+        || d.is_key_pressed(KeyboardKey::KEY_J)
+        || d.is_key_pressed(KeyboardKey::KEY_K)
+        || d.is_key_pressed(KeyboardKey::KEY_L)
+    {
+        return true;
+    }
+
+    false
+}
+
 fn main() {
     let settings: Settings = get_settings(768, 768, 20, 20, 26);
     let entities: Vec<Entity> = get_starting_entities();
@@ -331,9 +343,14 @@ fn main() {
         let mut d = rl.begin_drawing(&thread);
         d.clear_background(Color::BLACK);
 
-        let updated_game: Game = update_entities(&mut d, &game, &settings);
-        draw_game(&mut d, &updated_game, &settings);
+        if user_interacted(&mut d) {
+            let updated_game: Game = update_entities(&mut d, &game, &settings);
 
-        game = updated_game;
+            draw_game(&mut d, &updated_game, &settings);
+
+            game = updated_game;
+        } else {
+            draw_game(&mut d, &game, &settings);
+        }
     }
 }
