@@ -132,16 +132,21 @@ pub fn entities(
                 _ => Color::WHITE,
             },
         );
-
-        let id_to_draw: String = entity.id.to_string().chars().skip(30).take(6).collect();
-        d.draw_text(
-            &id_to_draw,
-            (entity.pos.x * settings.graphic.tile_width),
-            (entity.pos.y * settings.graphic.tile_height) + settings.graphic.font_offset_y + 30,
-            8,
-            entity.characteristics.color,
-        );
     }
+}
+
+pub fn mouse(
+    d: &mut RaylibDrawHandle,
+    game: &Game,
+    settings: &Settings,
+    tileset_terrain: &Texture2D,
+    tileset_entities: &Texture2D,
+) {
+    let mouse_x = d.get_mouse_x();
+    let mouse_y = d.get_mouse_y();
+
+    let text = format!("x: {}, y: {}", mouse_x, mouse_y);
+    d.draw_text(&text, mouse_x, mouse_y, 20, Color::WHITE);
 }
 
 pub fn frame(
@@ -153,4 +158,5 @@ pub fn frame(
 ) {
     grid(d, &settings);
     entities(d, game, &settings, tileset_terrain, tileset_entities);
+    mouse(d, game, &settings, tileset_terrain, tileset_entities);
 }
