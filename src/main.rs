@@ -1,6 +1,23 @@
+use std::{collections::HashMap, iter::Map};
+
 use rand::prelude::*;
-use raylib::prelude::*;
+use raylib::{misc::AsF32, prelude::*};
 use uuid::Uuid;
+
+#[derive(PartialEq, Eq, Hash, Debug, Clone)]
+enum TileNames {
+    Dirt1,
+    Dirt2,
+    Dirt3,
+    Dirt4,
+    Grass1,
+    Grass2,
+    Grass3,
+    BrickWall,
+    NakedPlayer,
+    NPC,
+    Outline,
+}
 
 #[derive(Debug, Clone, Copy)]
 enum EntityRelationship {
@@ -15,12 +32,18 @@ enum EntityMode {
     Building,
     Player,
     NPC,
+    Mob,
 }
 
 #[derive(Debug, Clone)]
 struct EntityCharacteristics {
-    face: char,
+    face: TileNames,
     color: Color,
+}
+
+struct TilePosition {
+    x: f32,
+    y: f32,
 }
 
 #[derive(Debug, Clone)]
@@ -215,6 +238,7 @@ fn update_entities(d: &mut RaylibDrawHandle, game: &Game, settings: &Settings) -
         match entity.mode {
             EntityMode::Player => update_player(entity, d, game),
             EntityMode::NPC => move_random(entity, game),
+            EntityMode::Mob => move_random(entity, game),
             _ => (),
         }
     }
@@ -248,24 +272,90 @@ fn draw_grid(d: &mut RaylibDrawHandle, settings: &Settings) {
     }
 }
 
-fn draw_entities(d: &mut RaylibDrawHandle, game: &Game, settings: &Settings) {
+fn draw_entities(d: &mut RaylibDrawHandle, game: &Game, settings: &Settings, tileset: &Texture2D) {
+    let mut tile_map: HashMap<TileNames, TilePosition> = HashMap::new();
+
+    tile_map.insert(TileNames::Dirt1, TilePosition { x: 1.0, y: 0.0 });
+    tile_map.insert(TileNames::Dirt2, TilePosition { x: 2.0, y: 0.0 });
+    tile_map.insert(TileNames::Dirt3, TilePosition { x: 3.0, y: 0.0 });
+    tile_map.insert(TileNames::Dirt4, TilePosition { x: 4.0, y: 0.0 });
+    tile_map.insert(TileNames::Grass1, TilePosition { x: 6.0, y: 0.0 });
+    tile_map.insert(TileNames::Grass2, TilePosition { x: 7.0, y: 0.0 });
+    tile_map.insert(TileNames::Grass3, TilePosition { x: 8.0, y: 0.0 });
+    tile_map.insert(TileNames::BrickWall, TilePosition { x: 7.0, y: 15.0 });
+
+    tile_map.insert(TileNames::NakedPlayer, TilePosition { x: 25.0, y: 0.0 });
+    tile_map.insert(TileNames::NPC, TilePosition { x: 25.0, y: 9.0 });
+    tile_map.insert(TileNames::Outline, TilePosition { x: 24.0, y: 7.0 });
+
+    let tile_side_size = 16.0;
+    let scale = 2.5;
+
     for building in game.buildings.iter() {
-        d.draw_text(
-            &building.characteristics.face.to_string(),
-            (building.pos.x * settings.graphic.tile_width) + settings.graphic.font_offset_x,
-            (building.pos.y * settings.graphic.tile_height) + settings.graphic.font_offset_y,
-            settings.graphic.font_size,
-            building.characteristics.color,
-        )
+        // d.draw_text(
+        //     &building.characteristics.face.to_string(),
+        //     (building.pos.x * settings.graphic.tile_width) + settings.graphic.font_offset_x,
+        //     (building.pos.y * settings.graphic.tile_height) + settings.graphic.font_offset_y,
+        //     settings.graphic.font_size,
+        //     building.characteristics.color,
+        // )
+        let source_rec = Rectangle::new(
+            tile_side_size * tile_map.get(&building.characteristics.face).unwrap().x,
+            tile_side_size * tile_map.get(&building.characteristics.face).unwrap().y,
+            16.0,
+            16.0,
+        );
+        let dest_rec = Rectangle::new(
+            building.pos.x.as_f32() * (tile_side_size * scale),
+            building.pos.y.as_f32() * (tile_side_size * scale),
+            tile_side_size * scale,
+            tile_side_size * scale,
+        );
+        let origin = Vector2::new(0.0, 0.0);
+        d.draw_texture_tiled(
+            tileset,
+            source_rec,
+            dest_rec,
+            origin,
+            0.0,
+            scale,
+            Color::WHITE,
+        );
     }
 
     for entity in game.entities.iter() {
-        d.draw_text(
-            &entity.characteristics.face.to_string(),
-            (entity.pos.x * settings.graphic.tile_width) + settings.graphic.font_offset_x,
-            (entity.pos.y * settings.graphic.tile_height) + settings.graphic.font_offset_y,
-            settings.graphic.font_size,
-            entity.characteristics.color,
+        // d.draw_text(
+        //     &entity.characteristics.face.to_string(),
+        //     (entity.pos.x * settings.graphic.tile_width) + settings.graphic.font_offset_x,
+        //     (entity.pos.y * settings.graphic.tile_height) + settings.graphic.font_offset_y,
+        //     settings.graphic.font_size,
+        //     entity.characteristics.color,
+        // );
+        let source_rec = Rectangle::new(
+            tile_side_size * tile_map.get(&entity.characteristics.face).unwrap().x,
+            tile_side_size * tile_map.get(&entity.characteristics.face).unwrap().y,
+            16.0,
+            16.0,
+        );
+        let dest_rec = Rectangle::new(
+            entity.pos.x.as_f32() * (tile_side_size * scale),
+            entity.pos.y.as_f32() * (tile_side_size * scale),
+            tile_side_size * scale,
+            tile_side_size * scale,
+        );
+        let origin = Vector2::new(0.0, 0.0);
+        d.draw_texture_tiled(
+            tileset,
+            source_rec,
+            dest_rec,
+            origin,
+            0.0,
+            scale,
+            match entity.mode {
+                EntityMode::Mob => Color::RED,
+                EntityMode::NPC => Color::SKYBLUE,
+                _ => Color::WHITE,
+            },
         );
 
         let id_to_draw: String = entity.id.to_string().chars().skip(30).take(6).collect();
@@ -279,9 +369,9 @@ fn draw_entities(d: &mut RaylibDrawHandle, game: &Game, settings: &Settings) {
     }
 }
 
-fn draw_game(d: &mut RaylibDrawHandle, game: &Game, settings: &Settings) {
+fn draw_game(d: &mut RaylibDrawHandle, game: &Game, settings: &Settings, tileset: &Texture2D) {
     draw_grid(d, &settings);
-    draw_entities(d, game, &settings);
+    draw_entities(d, game, &settings, tileset);
 }
 
 fn get_settings(
@@ -356,9 +446,10 @@ fn gen_entity(
 ) -> Entity {
     let entity_characteristics = EntityCharacteristics {
         face: match entity_mode {
-            EntityMode::Building => '#',
-            EntityMode::Player => '@',
-            EntityMode::NPC => '&',
+            EntityMode::Building => TileNames::BrickWall,
+            EntityMode::Player => TileNames::NakedPlayer,
+            EntityMode::NPC => TileNames::NPC,
+            EntityMode::Mob => TileNames::Outline,
         },
         color: match entity_relationship {
             EntityRelationship::Foe => Color::RED,
@@ -402,7 +493,7 @@ fn get_starting_entities(settings: &Settings) -> Vec<Entity> {
 
     for _ in 0..5 {
         let npc: Entity = gen_entity(
-            EntityMode::NPC,
+            EntityMode::Mob,
             EntityRelationship::Foe,
             gen_random_position(
                 &to_return,
@@ -477,7 +568,7 @@ fn debug(game: &Game) {
         print!("\t\t- Mode {:#?}\n", entity.mode);
         print!("\t\t- Relationship {:#?}\n", entity.relationship);
         print!("\t\t- Characteristics\n");
-        print!("\t\t\t- Face {}\n", entity.characteristics.face);
+        print!("\t\t\t- Face {:#?}\n", entity.characteristics.face);
         print!(
             "\t\t\t- Color: r={} g={} b={}\n",
             entity.characteristics.color.r,
@@ -490,7 +581,7 @@ fn debug(game: &Game) {
 }
 
 fn main() {
-    let settings: Settings = get_settings(768, 768, 20, 20, 26);
+    let settings: Settings = get_settings(800, 800, 20, 20, 26);
     let entities: Vec<Entity> = get_starting_entities(&settings);
     let buildings: Vec<Entity> = get_starting_buildings(&settings);
 
@@ -505,6 +596,8 @@ fn main() {
         .title("Poorguelike")
         .build();
 
+    let tileset = rl.load_texture(&thread, "./tileset.png").unwrap();
+
     while !rl.window_should_close() {
         let mut d = rl.begin_drawing(&thread);
         d.clear_background(Color::BLACK);
@@ -512,13 +605,13 @@ fn main() {
         if user_interacted(&mut d) {
             let updated_game: Game = update_entities(&mut d, &game, &settings);
 
-            draw_game(&mut d, &updated_game, &settings);
+            draw_game(&mut d, &updated_game, &settings, &tileset);
 
             game = updated_game;
 
             debug(&game)
         } else {
-            draw_game(&mut d, &game, &settings);
+            draw_game(&mut d, &game, &settings, &tileset);
         }
     }
 }
