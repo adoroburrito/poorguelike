@@ -10,6 +10,14 @@ I'm trying to use the least amount of dependencies possible, so for now the only
 
 For art is using this great [Kenney](kenney.nl) tileset (I'm not an artist, but I'll probably expand it further if I need more stuff): https://www.kenney.nl/assets/bit-pack
 
+## Installation
+Make sure you've got [rust stuff installed](https://rustup.rs/) and then:
+
+```bash
+git clone https://github.com/adoroburrito/poorguelike
+cd poorguelike
+cargo run
+```
 ## Motivation
 
 I get bored out of my mind by practicing leetcode/learning algorithm/data structure implementations and advanced theory, so I figured why not try making something a little bit more difficult by applying those concepts to something more tangible that I would actually enjoy coding? So here we are.
