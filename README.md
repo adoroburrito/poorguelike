@@ -18,6 +18,8 @@ git clone https://github.com/adoroburrito/poorguelike
 cd poorguelike
 cargo run
 ```
+
+Tested on OSX, but should work fine on Linux. I'm not sure if Raylib works on Windows, it probably does but I haven't tested.
 ## Motivation
 
 I get bored out of my mind by practicing leetcode/learning algorithm/data structure implementations and advanced theory, so I figured why not try making something a little bit more difficult by applying those concepts to something more tangible that I would actually enjoy coding? So here we are.
