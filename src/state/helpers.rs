@@ -10,6 +10,24 @@ use raylib::drawing::RaylibDrawHandle;
 use raylib::prelude::KeyboardKey;
 use uuid::Uuid;
 
+pub fn get_entities_in_tile(game: &Game, tile_pos: &Position) -> Vec<Entity> {
+    let mut to_return: Vec<Entity> = Vec::new();
+
+    for building in &game.buildings {
+        if building.pos.x == tile_pos.x && building.pos.y == tile_pos.y {
+            to_return.push(building.to_owned());
+        }
+    }
+
+    for entity in &game.entities {
+        if entity.pos.x == tile_pos.x && entity.pos.y == tile_pos.y {
+            to_return.push(entity.to_owned());
+        }
+    }
+
+    to_return
+}
+
 pub fn gen_random_position(entities: &Vec<Entity>, max_cols: i32, max_rows: i32) -> Position {
     let mut rng = rand::thread_rng();
 
@@ -34,13 +52,54 @@ pub fn gen_random_position(entities: &Vec<Entity>, max_cols: i32, max_rows: i32)
     final_position
 }
 
+fn get_random_grass() -> TileNames {
+    let mut rng = rand::thread_rng();
+    let random_grass: u8 = rng.gen_range(0..=100);
+    let grass_texture: &TileNames = match random_grass {
+        0..=50 => &TileNames::Grass1,
+        51..=75 => &TileNames::Grass2,
+        76..=100 => &TileNames::Grass3,
+        _ => unreachable!(),
+    };
+
+    grass_texture.to_owned()
+}
+
+fn get_random_dirt() -> TileNames {
+    let mut rng = rand::thread_rng();
+    let random_grass: u8 = rng.gen_range(0..=100);
+    let grass_texture: &TileNames = match random_grass {
+        0..=50 => &TileNames::Dirt0,
+        51..=60 => &TileNames::Dirt1,
+        61..=80 => &TileNames::Dirt2,
+        81..=90 => &TileNames::Dirt3,
+        91..=100 => &TileNames::Dirt4,
+        _ => unreachable!(),
+    };
+
+    grass_texture.to_owned()
+}
+
 fn get_random_ground() -> TileNames {
     let mut rng = rand::thread_rng();
-    let random_grass: u8 = rng.gen_range(1..4);
-    let grass_texture: &TileNames = match random_grass {
-        1 => &TileNames::Grass1,
-        2 => &TileNames::Grass2,
-        3 => &TileNames::Grass3,
+    let random_ground: u8 = rng.gen_range(1..=100);
+
+    let grass_texture = match random_ground {
+        0..=66 => get_random_dirt(),
+        67..=100 => get_random_grass(),
+        _ => unreachable!(),
+    };
+
+    grass_texture.to_owned()
+}
+
+fn get_random_brick_wall() -> TileNames {
+    let mut rng = rand::thread_rng();
+    let random_brick_wall: u8 = rng.gen_range(1..=100);
+    let grass_texture: &TileNames = match random_brick_wall {
+        1..=74 => &TileNames::BrickWall1,
+        75..=89 => &TileNames::BrickWall2,
+        90..=100 => &TileNames::BrickWall3,
         _ => unreachable!(),
     };
 
@@ -54,7 +113,7 @@ pub fn gen_entity(
 ) -> Entity {
     let entity_characteristics = EntityCharacteristics {
         face: match entity_mode {
-            EntityMode::Wall => TileNames::BrickWall,
+            EntityMode::BrickWall => get_random_brick_wall(),
             EntityMode::Player => TileNames::NakedPlayer,
             EntityMode::NPC => TileNames::NPC,
             EntityMode::Mob => TileNames::Outline,
@@ -67,7 +126,7 @@ pub fn gen_entity(
             EntityRelationship::None => Color::from_hex("333333").unwrap(),
         },
         walkable: match entity_mode {
-            EntityMode::Wall => false,
+            EntityMode::BrickWall => false,
             EntityMode::Player => false,
             EntityMode::NPC => false,
             EntityMode::Mob => false,

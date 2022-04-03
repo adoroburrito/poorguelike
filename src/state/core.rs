@@ -50,13 +50,13 @@ pub fn get_starting_buildings(settings: &Settings) -> Vec<Entity> {
 
     for n in 0..settings.graphic.columns {
         buildings.push(StateHelpers::gen_entity(
-            EntityMode::Wall,
+            EntityMode::BrickWall,
             EntityRelationship::None,
             Position { x: n, y: 0 },
         ));
 
         buildings.push(StateHelpers::gen_entity(
-            EntityMode::Wall,
+            EntityMode::BrickWall,
             EntityRelationship::None,
             Position {
                 x: n,
@@ -67,13 +67,13 @@ pub fn get_starting_buildings(settings: &Settings) -> Vec<Entity> {
 
     for n in 0..settings.graphic.rows {
         buildings.push(StateHelpers::gen_entity(
-            EntityMode::Wall,
+            EntityMode::BrickWall,
             EntityRelationship::None,
             Position { x: 0, y: n },
         ));
 
         buildings.push(StateHelpers::gen_entity(
-            EntityMode::Wall,
+            EntityMode::BrickWall,
             EntityRelationship::None,
             Position {
                 x: settings.graphic.rows - 1,

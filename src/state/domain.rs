@@ -12,7 +12,7 @@ pub enum EntityRelationship {
 
 #[derive(Debug, Clone, Copy)]
 pub enum EntityMode {
-    Wall,
+    BrickWall,
     Ground,
     Player,
     NPC,
