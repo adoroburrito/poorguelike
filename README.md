@@ -49,3 +49,7 @@ I really like the following ideas of roguelikes:
   - [ ] Pathfinding
   - [ ] ECS
   - [ ] Figure out how to make rendering efficient (right now I'm using brute force tactics in almost everything)
+
+## Contribute
+
+I'm accepting ideas for the game! If you enjoy roguelikes like I do, feel free to open an issue on this repo with a suggestion for the game. If you want to help me make my code less bad, also feel free to open a PR! I'll accept anything that has a good description of what is being refactored and why (if you also teach me something in the process, I'll be forever grateful <3), just make sure it doesn't make the game less fun, harder to manage (code-wise) or it's not related at all.
