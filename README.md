@@ -31,3 +31,21 @@ I really like the following ideas of roguelikes:
   - Items
   - There are a lot of complex systems on cool roguelikes!
 - Simple graphics (I chose to use tiles here because *ascii* although charming (for me) is not very approachable if I want to show this to my non-programmer friends that might not have played roguelikes before
+
+## Plan
+- [ ] Make the game basics work
+  - [ ] Graphics
+    - [X] Draw grid
+    - [X] Render text symbols in grid
+    - [X] Implement simple movement and collision
+    - [X] Figure out how to render tiles
+    - [X] Add mouse interaction (for future inspection of tiles)
+    - [ ] Implement fog of war
+  - [ ] Map generation
+  - [ ] Spawns
+  - [ ] Combat
+  - [ ] Equipment/Items
+- [ ] Learn about advanced architecture/algorithms
+  - [ ] Pathfinding
+  - [ ] ECS
+  - [ ] Figure out how to make rendering efficient (right now I'm using brute force tactics in almost everything)
