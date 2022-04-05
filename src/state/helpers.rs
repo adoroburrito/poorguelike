@@ -332,14 +332,132 @@ pub fn position_free(pos: &Position, entities: &Vec<Entity>) -> bool {
     true
 }
 
-pub fn user_interacted(d: &RaylibDrawHandle) -> bool {
-    if d.is_key_pressed(KeyboardKey::KEY_H)
-        || d.is_key_pressed(KeyboardKey::KEY_J)
-        || d.is_key_pressed(KeyboardKey::KEY_K)
-        || d.is_key_pressed(KeyboardKey::KEY_L)
-    {
-        return true;
+pub fn get_all_keys() -> Vec<KeyboardKey> {
+    let mut all_keys: Vec<KeyboardKey> = Vec::new();
+
+    all_keys.push(KeyboardKey::KEY_A);
+    all_keys.push(KeyboardKey::KEY_B);
+    all_keys.push(KeyboardKey::KEY_C);
+    all_keys.push(KeyboardKey::KEY_D);
+    all_keys.push(KeyboardKey::KEY_E);
+    all_keys.push(KeyboardKey::KEY_F);
+    all_keys.push(KeyboardKey::KEY_G);
+    all_keys.push(KeyboardKey::KEY_H);
+    all_keys.push(KeyboardKey::KEY_I);
+    all_keys.push(KeyboardKey::KEY_J);
+    all_keys.push(KeyboardKey::KEY_K);
+    all_keys.push(KeyboardKey::KEY_L);
+    all_keys.push(KeyboardKey::KEY_M);
+    all_keys.push(KeyboardKey::KEY_N);
+    all_keys.push(KeyboardKey::KEY_O);
+    all_keys.push(KeyboardKey::KEY_P);
+    all_keys.push(KeyboardKey::KEY_Q);
+    all_keys.push(KeyboardKey::KEY_R);
+    all_keys.push(KeyboardKey::KEY_S);
+    all_keys.push(KeyboardKey::KEY_T);
+    all_keys.push(KeyboardKey::KEY_U);
+    all_keys.push(KeyboardKey::KEY_V);
+    all_keys.push(KeyboardKey::KEY_X);
+    all_keys.push(KeyboardKey::KEY_Y);
+    all_keys.push(KeyboardKey::KEY_W);
+    all_keys.push(KeyboardKey::KEY_Z);
+    all_keys.push(KeyboardKey::KEY_ONE);
+    all_keys.push(KeyboardKey::KEY_TWO);
+    all_keys.push(KeyboardKey::KEY_THREE);
+    all_keys.push(KeyboardKey::KEY_FOUR);
+    all_keys.push(KeyboardKey::KEY_FIVE);
+    all_keys.push(KeyboardKey::KEY_SIX);
+    all_keys.push(KeyboardKey::KEY_SEVEN);
+    all_keys.push(KeyboardKey::KEY_EIGHT);
+    all_keys.push(KeyboardKey::KEY_NINE);
+    all_keys.push(KeyboardKey::KEY_ZERO);
+    all_keys.push(KeyboardKey::KEY_DOWN);
+    all_keys.push(KeyboardKey::KEY_LEFT);
+    all_keys.push(KeyboardKey::KEY_RIGHT);
+    all_keys.push(KeyboardKey::KEY_UP);
+    all_keys.push(KeyboardKey::KEY_APOSTROPHE);
+    all_keys.push(KeyboardKey::KEY_BACK);
+    all_keys.push(KeyboardKey::KEY_BACKSLASH);
+    all_keys.push(KeyboardKey::KEY_BACKSPACE);
+    all_keys.push(KeyboardKey::KEY_CAPS_LOCK);
+    all_keys.push(KeyboardKey::KEY_COMMA);
+    all_keys.push(KeyboardKey::KEY_DELETE);
+    all_keys.push(KeyboardKey::KEY_END);
+    all_keys.push(KeyboardKey::KEY_ENTER);
+    all_keys.push(KeyboardKey::KEY_EQUAL);
+    all_keys.push(KeyboardKey::KEY_ESCAPE);
+    all_keys.push(KeyboardKey::KEY_F1);
+    all_keys.push(KeyboardKey::KEY_F2);
+    all_keys.push(KeyboardKey::KEY_F3);
+    all_keys.push(KeyboardKey::KEY_F4);
+    all_keys.push(KeyboardKey::KEY_F5);
+    all_keys.push(KeyboardKey::KEY_F6);
+    all_keys.push(KeyboardKey::KEY_F7);
+    all_keys.push(KeyboardKey::KEY_F8);
+    all_keys.push(KeyboardKey::KEY_F9);
+    all_keys.push(KeyboardKey::KEY_F10);
+    all_keys.push(KeyboardKey::KEY_F11);
+    all_keys.push(KeyboardKey::KEY_F12);
+    all_keys.push(KeyboardKey::KEY_GRAVE);
+    all_keys.push(KeyboardKey::KEY_HOME);
+    all_keys.push(KeyboardKey::KEY_INSERT);
+    all_keys.push(KeyboardKey::KEY_KB_MENU);
+    all_keys.push(KeyboardKey::KEY_KP_0);
+    all_keys.push(KeyboardKey::KEY_KP_1);
+    all_keys.push(KeyboardKey::KEY_KP_2);
+    all_keys.push(KeyboardKey::KEY_KP_3);
+    all_keys.push(KeyboardKey::KEY_KP_4);
+    all_keys.push(KeyboardKey::KEY_KP_5);
+    all_keys.push(KeyboardKey::KEY_KP_6);
+    all_keys.push(KeyboardKey::KEY_KP_7);
+    all_keys.push(KeyboardKey::KEY_KP_8);
+    all_keys.push(KeyboardKey::KEY_KP_9);
+    all_keys.push(KeyboardKey::KEY_KP_ENTER);
+    all_keys.push(KeyboardKey::KEY_KP_ADD);
+    all_keys.push(KeyboardKey::KEY_KP_DECIMAL);
+    all_keys.push(KeyboardKey::KEY_KP_DIVIDE);
+    all_keys.push(KeyboardKey::KEY_KP_ENTER);
+    all_keys.push(KeyboardKey::KEY_KP_EQUAL);
+    all_keys.push(KeyboardKey::KEY_KP_MULTIPLY);
+    all_keys.push(KeyboardKey::KEY_KP_SUBTRACT);
+    all_keys.push(KeyboardKey::KEY_LEFT_ALT);
+    all_keys.push(KeyboardKey::KEY_LEFT_BRACKET);
+    all_keys.push(KeyboardKey::KEY_LEFT_CONTROL);
+    all_keys.push(KeyboardKey::KEY_LEFT_SHIFT);
+    all_keys.push(KeyboardKey::KEY_LEFT_SUPER);
+    all_keys.push(KeyboardKey::KEY_MINUS);
+    all_keys.push(KeyboardKey::KEY_NULL);
+    all_keys.push(KeyboardKey::KEY_NUM_LOCK);
+    all_keys.push(KeyboardKey::KEY_PAGE_DOWN);
+    all_keys.push(KeyboardKey::KEY_PAGE_UP);
+    all_keys.push(KeyboardKey::KEY_PAUSE);
+    all_keys.push(KeyboardKey::KEY_PERIOD);
+    all_keys.push(KeyboardKey::KEY_PRINT_SCREEN);
+    all_keys.push(KeyboardKey::KEY_RIGHT_ALT);
+    all_keys.push(KeyboardKey::KEY_RIGHT_BRACKET);
+    all_keys.push(KeyboardKey::KEY_RIGHT_CONTROL);
+    all_keys.push(KeyboardKey::KEY_RIGHT_SHIFT);
+    all_keys.push(KeyboardKey::KEY_RIGHT_SUPER);
+    all_keys.push(KeyboardKey::KEY_SCROLL_LOCK);
+    all_keys.push(KeyboardKey::KEY_SEMICOLON);
+    all_keys.push(KeyboardKey::KEY_SLASH);
+    all_keys.push(KeyboardKey::KEY_SPACE);
+    all_keys.push(KeyboardKey::KEY_TAB);
+    all_keys.push(KeyboardKey::KEY_VOLUME_DOWN);
+    all_keys.push(KeyboardKey::KEY_VOLUME_UP);
+    all_keys.push(KeyboardKey::KEY_MENU);
+
+    all_keys
+}
+
+pub fn user_interacted(d: &RaylibDrawHandle) -> Option<KeyboardKey> {
+    let all_keys: Vec<KeyboardKey> = get_all_keys();
+
+    for key in all_keys {
+        if d.is_key_pressed(key) {
+            return Option::Some(key);
+        }
     }
 
-    false
+    return Option::None;
 }

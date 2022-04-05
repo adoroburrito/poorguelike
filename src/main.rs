@@ -3,6 +3,7 @@ use crate::state::core as StateCore;
 use crate::state::domain::{Entity, Game, Settings};
 use crate::state::helpers as StateHelpers;
 use raylib::color::Color;
+use raylib::consts::KeyboardKey;
 use raylib::prelude::RaylibDraw;
 use std::collections::HashMap;
 
@@ -53,8 +54,20 @@ fn main() {
         let mut d = rl.begin_drawing(&thread);
         d.clear_background(Color::BLACK);
 
-        if StateHelpers::user_interacted(&mut d) {
-            let updated_game: Game = StateCore::update_game_states(&mut d, &game, &settings);
+        let interaction = StateHelpers::user_interacted(&mut d);
+        let interacted = match interaction {
+            Some(key) => true,
+            None => false,
+        };
+
+        let key_pressed = match interaction {
+            Some(key) => key,
+            None => KeyboardKey::KEY_NULL,
+        };
+
+        if interacted {
+            let updated_game: Game =
+                StateCore::update_game_states(&mut d, &game, &settings, key_pressed);
 
             DrawGame::frame(
                 &mut d,

@@ -1,3 +1,4 @@
+use raylib::consts::KeyboardKey;
 use raylib::drawing::RaylibDrawHandle;
 
 use crate::state::domain::{Entity, EntityMode, EntityRelationship, Game, Position, Settings};
@@ -95,7 +96,19 @@ pub fn get_starting_buildings(settings: &Settings) -> Vec<Entity> {
     return buildings;
 }
 
-pub fn update_game_states(d: &mut RaylibDrawHandle, game: &Game, settings: &Settings) -> Game {
+pub fn get_command_for_key(key: &KeyboardKey) {}
+
+pub fn update_game_states(
+    d: &mut RaylibDrawHandle,
+    game: &Game,
+    settings: &Settings,
+    key_pressed: KeyboardKey,
+) -> Game {
+    // to-do: command pattern -> figure out command for pressed key
+    // apply command to gameplay if it is a gameplay command
+    // apply command to hud and dont update game status if its a hud command
+    let command = get_command_for_key(&key_pressed);
+
     let mut new_entities = game.entities.to_vec();
 
     for entity in new_entities.iter_mut() {
