@@ -11,7 +11,7 @@ I'm trying to use the least amount of dependencies possible, so for now the only
 For art is using this great [Kenney](kenney.nl) tileset (I'm not an artist, but I'll probably expand it further if I need more stuff): https://www.kenney.nl/assets/bit-pack
 
 ## Installation
-Make sure you've got [rust stuff installed](https://rustup.rs/) and then:
+Make sure you've got [rust stuff installed](https://rustup.rs/), CMake (on OSX: `brew install cmake`) and then:
 
 ```bash
 git clone https://github.com/adoroburrito/poorguelike
@@ -20,6 +20,12 @@ cargo run
 ```
 
 Tested on OSX, but should work fine on Linux. I'm not sure if Raylib works on Windows, it probably does but I haven't tested.
+
+## Commands
+Pressing any button will trigger a game state update (later I'll make it so that only *gameplay* actions do that, and not *HUD* or other stuff, I hate dying when I'm messing around in some obscure menu in a game)
+
+Movement is bound to H, J, K and L *(for now)*
+
 ## Motivation
 
 I get bored out of my mind by practicing leetcode/learning algorithm/data structure implementations and advanced theory, so I figured why not try making something a little bit more difficult by applying those concepts to something more tangible that I would actually enjoy coding? So here we are.
