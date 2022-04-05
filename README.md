@@ -50,6 +50,10 @@ I really like the following ideas of roguelikes:
 
 ## Plan
 - [ ] Make the game basics work
+  - [ ] Input
+    - [X] Get user input
+    - [ ] Segregate user input from game actions/actors
+    - [X] Trigger state changes/game loop on user action
   - [ ] Graphics
     - [X] Draw grid
     - [X] Render text symbols in grid
