@@ -1,93 +1,122 @@
-use crate::draw as DrawGame;
-use crate::state::core as StateCore;
-use crate::state::domain::{Entity, Game, Settings};
-use crate::state::helpers as StateHelpers;
 use raylib::color::Color;
-use raylib::consts::KeyboardKey;
-use raylib::prelude::RaylibDraw;
-use std::collections::HashMap;
+use raylib::prelude::*;
 
-mod state;
+struct GraphicSettings {
+    tile_size: u32,
+}
 
-mod draw;
+struct WindowSettings {
+    height: f32,
+    width: f32,
+}
+pub struct Settings {
+    graphic: GraphicSettings,
+    window: WindowSettings,
+}
 
-fn debug(game: &Game) {
-    println!("Entities:");
+pub fn draw_grid(d: &mut RaylibDrawHandle, settings: &Settings) {
+    // based on the tile size:
+    // how many tiles fit horizontally and vertically?
+    let tile_size_f32: f32 = settings.graphic.tile_size as f32;
+    let target_tile_quantity_horizontally: u32 =
+        (settings.window.width / tile_size_f32).ceil() as u32;
+    let target_tile_quantity_vertically: u32 =
+        (settings.window.height / tile_size_f32).ceil() as u32;
 
-    for entity in game.entities.iter() {
-        print!("\t- Entity {}\n", entity.id);
-        print!("\t\t- Mode {:#?}\n", entity.mode);
-        print!("\t\t- Relationship {:#?}\n", entity.relationship);
-        print!("\t\t- Characteristics\n");
-        print!("\t\t\t- Face {:#?}\n", entity.characteristics.face);
-        print!(
-            "\t\t\t- Color: r={} g={} b={}\n",
-            entity.characteristics.color.r,
-            entity.characteristics.color.g,
-            entity.characteristics.color.b
+    for n in 0..=target_tile_quantity_horizontally {
+        d.draw_line(
+            (n * settings.graphic.tile_size).try_into().unwrap(),
+            0,
+            (n * settings.graphic.tile_size).try_into().unwrap(),
+            settings.window.height as i32,
+            Color::from_hex("AAAAAA").unwrap(),
         );
-        print!("\t\t- Position: x={} y={}\n", entity.pos.x, entity.pos.y);
-        println!();
+    }
+
+    for n in 0..target_tile_quantity_vertically {
+        d.draw_line(
+            0,
+            (n * settings.graphic.tile_size).try_into().unwrap(),
+            settings.window.width as i32,
+            (n * settings.graphic.tile_size).try_into().unwrap(),
+            Color::from_hex("AAAAAA").unwrap(),
+        );
+    }
+}
+
+pub fn draw_static_tile_positions(d: &mut RaylibDrawHandle, settings: &Settings) {
+    // based on the tile size:
+    // how many tiles fit horizontally and vertically?
+    let tile_size_f32: f32 = settings.graphic.tile_size as f32;
+    let target_tile_quantity_horizontally: u32 =
+        (settings.window.width / tile_size_f32).ceil() as u32;
+    let target_tile_quantity_vertically: u32 =
+        (settings.window.height / tile_size_f32).ceil() as u32;
+
+    let padding = 5;
+
+    for x in 0..=target_tile_quantity_horizontally {
+        for y in 0..=target_tile_quantity_vertically {
+            d.draw_text(
+                &format!("X: {} \nY: {}", x, y),
+                ((x * settings.graphic.tile_size) + padding) as i32,
+                ((y * settings.graphic.tile_size) + padding) as i32,
+                8,
+                Color::WHITE,
+            );
+        }
+    }
+}
+
+pub fn draw_world_tile_positions(d: &mut RaylibDrawHandle, settings: &Settings) {
+    // based on the tile size:
+    // how many tiles fit horizontally and vertically?
+    let tile_size_f32: f32 = settings.graphic.tile_size as f32;
+    let target_tile_quantity_horizontally: u32 =
+        (settings.window.width / tile_size_f32).ceil() as u32;
+    let target_tile_quantity_vertically: u32 =
+        (settings.window.height / tile_size_f32).ceil() as u32;
+
+    let padding_x = 40;
+    let padding_y = 35;
+
+    for x in 0..=target_tile_quantity_horizontally {
+        for y in 0..=target_tile_quantity_vertically {
+            d.draw_text(
+                &format!("X: {} \nY: {}", x, y),
+                ((x * settings.graphic.tile_size) + padding_x) as i32,
+                ((y * settings.graphic.tile_size) + padding_y) as i32,
+                8,
+                Color::RED,
+            );
+        }
     }
 }
 
 fn main() {
-    let settings: Settings = StateHelpers::get_settings(800, 800, 20, 20, 26);
-    let entities: Vec<Entity> = StateCore::get_starting_entities(&settings);
-    let buildings: Vec<Entity> = StateCore::get_starting_buildings(&settings);
-
-    let mut game = Game {
-        entities: entities,
-        settings: settings,
-        buildings: buildings,
-    };
+    let window_height = 640.0;
+    let window_width = 640.0;
 
     let (mut rl, thread) = raylib::init()
-        .size(settings.window.width, settings.window.height)
+        .size(window_height as i32, window_width as i32)
         .title("Poorguelike")
         .build();
+    rl.set_target_fps(60);
 
-    let tileset_entities = rl.load_texture(&thread, "./tileset_entities.png").unwrap();
-    let tileset_terrain = rl.load_texture(&thread, "./tileset_terrain.png").unwrap();
+    let settings = Settings {
+        graphic: GraphicSettings { tile_size: 64 },
+        window: WindowSettings {
+            height: window_height,
+            width: window_width,
+        },
+    };
 
     while !rl.window_should_close() {
         let mut d = rl.begin_drawing(&thread);
         d.clear_background(Color::BLACK);
 
-        let interaction = StateHelpers::user_interacted(&mut d);
-        let interacted = match interaction {
-            Some(key) => true,
-            None => false,
-        };
-
-        let key_pressed = match interaction {
-            Some(key) => key,
-            None => KeyboardKey::KEY_NULL,
-        };
-
-        if interacted {
-            let updated_game: Game =
-                StateCore::update_game_states(&mut d, &game, &settings, key_pressed);
-
-            DrawGame::frame(
-                &mut d,
-                &updated_game,
-                &settings,
-                &tileset_terrain,
-                &tileset_entities,
-            );
-
-            game = updated_game;
-
-            debug(&game)
-        } else {
-            DrawGame::frame(
-                &mut d,
-                &game,
-                &settings,
-                &tileset_terrain,
-                &tileset_entities,
-            );
-        }
+        draw_grid(&mut d, &settings);
+        draw_static_tile_positions(&mut d, &settings);
+        draw_world_tile_positions(&mut d, &settings);
     }
 }
