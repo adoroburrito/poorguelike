@@ -237,8 +237,8 @@ fn main() {
         },
     };
 
-    let world = prepare_world(10);
-    dbg!(&world[0]);
+    let world = prepare_world(1);
+    //dbg!(&world[0]);
 
     while !rl.window_should_close() {
         let mut d = rl.begin_drawing(&thread);
