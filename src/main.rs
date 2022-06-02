@@ -1,5 +1,5 @@
-use rand::Rng;
-use std::collections::HashMap;
+use rand::prelude::*;
+use std::cmp::Ordering;
 
 use raylib::color::Color;
 use raylib::prelude::*;
@@ -95,16 +95,20 @@ fn make_room(size: UVec2D) -> Room<'static> {
     // generate tiles for simple square room with random terrain
     for x in 1..=size_x {
         for y in 1..=size_y {
-            let wall_x = match x {
-                1 => true,
-                size_x => true,
-                _ => false,
+            let wall_x = match x.cmp(&size_x) {
+                Ordering::Equal => true,
+                _ => match x.cmp(&1) {
+                    Ordering::Equal => true,
+                    _ => false
+                }
             };
 
-            let wall_y = match y {
-                1 => true,
-                size_y => true,
-                _ => false,
+            let wall_y = match y.cmp(&size_y) {
+                Ordering::Equal => true,
+                _ => match y.cmp(&1) {
+                    Ordering::Equal => true,
+                    _ => false
+                }
             };
 
             let wall = wall_x || wall_y;
@@ -171,21 +175,68 @@ fn make_room(size: UVec2D) -> Room<'static> {
 fn place_staircases(room: &mut Room, entrance: bool, exit: bool) {
     let x = room.size.x;
     let y = room.size.y;
+    let mut entrance_position = UVec2D {
+        x: 0,
+        y: 0,
+    };
+
+    let mut exit_position = UVec2D {
+        x: 0,
+        y: 0,
+    };
+
+    //place entrance
+    match entrance {
+        true => {
+            // get a random position in the room
+            let mut rng = thread_rng();
+
+            entrance_position.x = rng.gen_range(0..=x);
+            entrance_position.y = rng.gen_range(0..=y);
+
+            room.tiles[entrance_position.x * entrance_position.y].stairs = Some(&StairsDirection::UP);
+        },
+        false => ()
+    }
+
+    //place exit
+    match exit {
+        true => {
+            // get a random position in the room
+            let mut rng = thread_rng();
+
+            exit_position.x = rng.gen_range(0..=x);
+            exit_position.y = rng.gen_range(0..=y);
+
+            room.tiles[exit_position.x * exit_position.y].stairs = Some(&StairsDirection::DOWN);
+        },
+        false => ()
+    }
 }
 
 fn prepare_world(rooms: usize) -> Vec<Room<'static>> {
+    match rooms.cmp(&2) {
+        Ordering::Less => panic!("Not enough rooms! Need at least 2 - Start + Finish"),
+        _ => ()
+    }
+
     println!("Generating world with {} rooms...", rooms);
     let mut world: Vec<Room> = Vec::new();
     let last_room: usize = rooms - 1;
 
     for n in 0..rooms {
         println!("Generating room n #{}", n + 1);
-        let mut room = make_room(UVec2D { x: 1000, y: 1000 });
-        match n {
-            0 => place_staircases(&mut room, false, true),
-            last_room => place_staircases(&mut room, true, false),
-            _ => place_staircases(&mut room, true, true),
+        let mut room = make_room(UVec2D { x: 2, y: 2 });
+
+        println!("Placing staircases for room n #{}", n + 1);
+        match n.cmp(&last_room) {
+            Ordering::Equal => place_staircases(&mut room, true, false),
+            _ => match n.cmp(&0) {
+                Ordering::Equal => place_staircases(&mut room, false, true),
+                _ => place_staircases(&mut room, true, true)
+            }
         }
+
         world.push(room);
     }
 
@@ -237,8 +288,21 @@ fn main() {
         },
     };
 
-    let world = prepare_world(1);
-    //dbg!(&world[0]);
+    let world = prepare_world(2);
+    println!(">>>DEBUG<<<");
+    for (idx, room) in world.iter().enumerate() {
+        println!("Room {}", idx + 1);
+        for (tile_idx, tile) in room.tiles.iter().enumerate() {
+            println!("\tTile with index #{} ->", tile_idx);
+            println!("\t\tHas stairs? {}", match tile.stairs {
+                None => "None",
+                Some(stairs_direction) => match stairs_direction {
+                    &StairsDirection::UP => "UP",
+                    &StairsDirection::DOWN => "DOWN",
+                }
+            });
+        }
+    }
 
     while !rl.window_should_close() {
         let mut d = rl.begin_drawing(&thread);
