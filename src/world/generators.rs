@@ -16,7 +16,7 @@ pub fn prepare_world(rooms: usize) -> Vec<Room<'static>> {
 
     for n in 0..rooms {
         println!("Generating room n #{}", n + 1);
-        let mut room = make_room(UVec2D { x: 2, y: 2 });
+        let mut room = make_room(UVec2D { x: 4, y: 4 });
 
         println!("Placing staircases for room n #{}", n + 1);
         match n.cmp(&last_room) {
@@ -36,8 +36,11 @@ pub fn prepare_world(rooms: usize) -> Vec<Room<'static>> {
 fn place_staircases(room: &mut Room, entrance: bool, exit: bool) {
     let x = room.size.x;
     let y = room.size.y;
-    let mut entrance_position = UVec2D { x: 0, y: 0 };
 
+    let max_x = x - 1;
+    let max_y = y - 1;
+
+    let mut entrance_position = UVec2D { x: 0, y: 0 };
     let mut exit_position = UVec2D { x: 0, y: 0 };
 
     //place entrance
@@ -46,8 +49,8 @@ fn place_staircases(room: &mut Room, entrance: bool, exit: bool) {
             // get a random position in the room
             let mut rng = thread_rng();
 
-            entrance_position.x = rng.gen_range(0..=x);
-            entrance_position.y = rng.gen_range(0..=y);
+            entrance_position.x = rng.gen_range(0..=max_x);
+            entrance_position.y = rng.gen_range(0..=max_y);
 
             room.tiles[entrance_position.x * entrance_position.y].stairs =
                 Some(&StairsDirection::Up);
@@ -56,13 +59,14 @@ fn place_staircases(room: &mut Room, entrance: bool, exit: bool) {
     }
 
     //place exit
+    //TO-DO: check if random chosen tile is an entrance first!
     match exit {
         true => {
             // get a random position in the room
             let mut rng = thread_rng();
 
-            exit_position.x = rng.gen_range(0..=x);
-            exit_position.y = rng.gen_range(0..=y);
+            exit_position.x = rng.gen_range(0..=max_x);
+            exit_position.y = rng.gen_range(0..=max_y);
 
             room.tiles[exit_position.x * exit_position.y].stairs = Some(&StairsDirection::Down);
         }
