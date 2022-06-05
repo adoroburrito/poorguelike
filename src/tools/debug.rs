@@ -9,8 +9,8 @@ pub fn log_rooms(world: Vec<Room>) {
         for (_, tile) in room.tiles.iter().enumerate() {
             let face = match tile.stairs {
                 None => match *tile.terrain {
-                    TerrainVariant::BrickWall1(_) => "#",
-                    TerrainVariant::BrickWall2(_) => "#",
+                    TerrainVariant::BrickWall1(_) => "▓",
+                    TerrainVariant::BrickWall2(_) => "░",
                     TerrainVariant::Dirt1(_) => ".",
                     TerrainVariant::Dirt2(_) => ",",
                     TerrainVariant::Grass1(_) => "'",
