@@ -1,39 +1,14 @@
 mod domain;
-use domain::map::*;
-
 mod world;
 use world::generators::*;
 
+mod tools;
+use tools::debug::*;
+
 fn main() {
     // creates world (vector of rooms, connected by stairs)
-    let world = prepare_world(3);
-
-    println!(">>>DEBUG<<<");
-    let mut count_x = 0;
-    for (idx, room) in world.iter().enumerate() {
-        println!("Room {}", idx + 1);
-        print!("\t");
-        for (_, tile) in room.tiles.iter().enumerate() {
-            let face = match tile.stairs {
-                None => "#",
-                Some(stairs_direction) => match *stairs_direction {
-                    StairsDirection::Up => "▲",
-                    StairsDirection::Down => "▼",
-                },
-            };
-
-            print!("{}", face);
-            if count_x == room.size.x - 1 {
-                print!("\n\t");
-                count_x = 0;
-
-                continue;
-            }
-
-            count_x += 1;
-        }
-        println!();
-    }
+    let world = prepare_world(4);
+    log_rooms(world);
 
     /* TO-DO: drawing
 

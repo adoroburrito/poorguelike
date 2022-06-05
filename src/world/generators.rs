@@ -16,7 +16,7 @@ pub fn prepare_world(rooms: usize) -> Vec<Room<'static>> {
 
     for n in 0..rooms {
         println!("Generating room n #{}", n + 1);
-        let mut room = make_room(UVec2D { x: 4, y: 4 });
+        let mut room = make_room(UVec2D { x: 10, y: 10 });
 
         println!("Placing staircases for room n #{}", n + 1);
         match n.cmp(&last_room) {
