@@ -1,3 +1,4 @@
+use crate::domain;
 use crate::domain::entities::{Actor, Entity};
 use crate::domain::map::{
     Room, RoomTile, StairsDirection, TerrainName, TerrainVariant, UVec2D, ALL_TERRAINS,
@@ -48,9 +49,18 @@ fn place_staircases(room: &mut Room, entrance: bool, exit: bool) {
         true => {
             // get a random position in the room
             let mut rng = thread_rng();
+            let mut finished = false;
 
-            entrance_position.x = rng.gen_range(0..=max_x);
-            entrance_position.y = rng.gen_range(0..=max_y);
+            while !finished {
+                entrance_position.x = rng.gen_range(0..=max_x);
+                entrance_position.y = rng.gen_range(0..=max_y);
+
+                finished = !matches!(
+                    *room.tiles[entrance_position.x * entrance_position.y].terrain,
+                    domain::map::TerrainVariant::BrickWall1(_)
+                        | domain::map::TerrainVariant::BrickWall2(_)
+                )
+            }
 
             room.tiles[entrance_position.x * entrance_position.y].stairs =
                 Some(&StairsDirection::Up);
@@ -59,14 +69,29 @@ fn place_staircases(room: &mut Room, entrance: bool, exit: bool) {
     }
 
     //place exit
-    //TO-DO: check if random chosen tile is an entrance first!
     match exit {
         true => {
             // get a random position in the room
             let mut rng = thread_rng();
 
-            exit_position.x = rng.gen_range(0..=max_x);
-            exit_position.y = rng.gen_range(0..=max_y);
+            let mut finished = false;
+
+            while !finished {
+                exit_position.x = rng.gen_range(0..=max_x);
+                exit_position.y = rng.gen_range(0..=max_y);
+
+                let target_tile = &room.tiles[exit_position.x * exit_position.y];
+
+                let has_wall = matches!(
+                    *target_tile.terrain,
+                    domain::map::TerrainVariant::BrickWall1(_)
+                        | domain::map::TerrainVariant::BrickWall2(_)
+                );
+
+                let has_stairs = target_tile.stairs.is_some();
+
+                finished = !has_wall && !has_stairs
+            }
 
             room.tiles[exit_position.x * exit_position.y].stairs = Some(&StairsDirection::Down);
         }
