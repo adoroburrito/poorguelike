@@ -13,12 +13,12 @@ fn main() {
     for (idx, room) in world.iter().enumerate() {
         println!("Room {}", idx + 1);
         print!("\t");
-        for (tile_idx, tile) in room.tiles.iter().enumerate() {
+        for (_, tile) in room.tiles.iter().enumerate() {
             let face = match tile.stairs {
                 None => "#",
                 Some(stairs_direction) => match *stairs_direction {
-                    StairsDirection::Up => "▼",
-                    StairsDirection::Down => "▲",
+                    StairsDirection::Up => "▲",
+                    StairsDirection::Down => "▼",
                 },
             };
 
